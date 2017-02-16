@@ -80,12 +80,14 @@ contract LegendsToken is ERC20 {
     /**
      * @dev Constructor.
      * @param _legendsCrowdfund Address of crowdfund contract.
+     * @param _preallocation Address to receive the pre-allocation.
      * @param _start Timestamp when the token becomes active.
      */
-    function LegendsToken(address _legendsCrowdfund, uint _start, bool _testing) {
+    function LegendsToken(address _legendsCrowdfund, address _preallocation, uint _start, bool _testing) {
         legendsCrowdfund = _legendsCrowdfund;
         start = _start;
         testing = _testing;
+        totalVIP = ownerVIP[_preallocation] = 25000 ether;
     }
     
     /**
@@ -151,4 +153,3 @@ contract LegendsToken is ERC20 {
     }
 
 }
-
