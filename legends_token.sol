@@ -7,12 +7,16 @@ import "./erc20.sol";
  * @title LegendsToken
  */
 contract LegendsToken is ERC20 {
+    string public name = 'VIP';             //The Token's name: e.g. DigixDAO Tokens
+    uint8 public decimals = 17;             // 1Token ¨= 1$ (1ETH ¨= 10$)
+    string public symbol = 'VIP';           //An identifier: e.g. REP
+    string public version = 'VIP_0.1';
 
     mapping (address => uint) ownerVIP;
     mapping (address => mapping (address => uint)) allowed;
     uint public totalVIP;
     uint public start;
-    
+
     address public legendsCrowdfund;
 
     bool public testing;
@@ -23,7 +27,7 @@ contract LegendsToken is ERC20 {
         }
         _;
     }
-    
+
     modifier isActive() {
         if (block.timestamp < start) {
             throw;
@@ -47,14 +51,14 @@ contract LegendsToken is ERC20 {
 
     modifier senderHasSufficient(uint VIP) {
         if (ownerVIP[msg.sender] < VIP) {
-            throw;
+            return false;
         }
         _;
     }
 
     modifier transferApproved(address from, uint VIP) {
         if (allowed[from][msg.sender] < VIP || ownerVIP[from] < VIP) {
-            throw;
+            return false;
         }
         _;
     }
@@ -89,7 +93,7 @@ contract LegendsToken is ERC20 {
         testing = _testing;
         totalVIP = ownerVIP[_preallocation] = 25000 ether;
     }
-    
+
     /**
      * @dev Add to token balance on address. Must be from crowdfund.
      * @param recipient Address to add tokens to.
