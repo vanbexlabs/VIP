@@ -2,17 +2,25 @@ pragma solidity ^0.4.9;
 
 import "./erc20.sol";
 
+contract LegendsCrowdfund {
+    function purchaseMembership(address recipient) payable;
+}
+
 
 /**
  * @title LegendsToken
  */
 contract LegendsToken is ERC20 {
+    string public name = 'VIP';             //The Token's name: e.g. DigixDAO Tokens
+    uint8 public decimals = 1;             // 1Token ¨= 1$ (1ETH ¨= 10$)
+    string public symbol = 'VIP';           //An identifier: e.g. REP
+    string public version = 'VIP_0.1';
 
     mapping (address => uint) ownerVIP;
     mapping (address => mapping (address => uint)) allowed;
     uint public totalVIP;
     uint public start;
-    
+
     address public legendsCrowdfund;
 
     bool public testing;
@@ -23,7 +31,7 @@ contract LegendsToken is ERC20 {
         }
         _;
     }
-    
+
     modifier isActive() {
         if (block.timestamp < start) {
             throw;
@@ -40,20 +48,6 @@ contract LegendsToken is ERC20 {
 
     modifier recipientIsValid(address recipient) {
         if (recipient == 0 || recipient == address(this)) {
-            throw;
-        }
-        _;
-    }
-
-    modifier senderHasSufficient(uint VIP) {
-        if (ownerVIP[msg.sender] < VIP) {
-            throw;
-        }
-        _;
-    }
-
-    modifier transferApproved(address from, uint VIP) {
-        if (allowed[from][msg.sender] < VIP || ownerVIP[from] < VIP) {
             throw;
         }
         _;
@@ -89,7 +83,7 @@ contract LegendsToken is ERC20 {
         testing = _testing;
         totalVIP = ownerVIP[_preallocation] = 25000 ether;
     }
-    
+
     /**
      * @dev Add to token balance on address. Must be from crowdfund.
      * @param recipient Address to add tokens to.
@@ -118,22 +112,30 @@ contract LegendsToken is ERC20 {
     /**
      * @dev Implements ERC20 transfer()
      */
-    function transfer(address _to, uint256 _value) isActive recipientIsValid(_to) senderHasSufficient(_value) returns (bool success) {
-        ownerVIP[msg.sender] -= _value;
-        ownerVIP[_to] += _value;
-        Transfer(msg.sender, _to, _value);
-        return true;
+    function transfer(address _to, uint256 _value) isActive recipientIsValid(_to) returns (bool success) {
+        if (ownerVIP[msg.sender] >= _value) {
+            ownerVIP[msg.sender] -= _value;
+            ownerVIP[_to] += _value;
+            Transfer(msg.sender, _to, _value);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
      * @dev Implements ERC20 transferFrom()
      */
-    function transferFrom(address _from, address _to, uint256 _value) isActive recipientIsValid(_to) transferApproved(_from, _value) returns (bool success) {
-        ownerVIP[_to] += _value;
-        ownerVIP[_from] -= _value;
-        allowed[_from][msg.sender] -= _value;
-        Transfer(_from, _to, _value);
-        return true;
+    function transferFrom(address _from, address _to, uint256 _value) isActive recipientIsValid(_to) returns (bool success) {
+        if (allowed[_from][msg.sender] >= _value && ownerVIP[_from] >= _value) {
+            ownerVIP[_to] += _value;
+            ownerVIP[_from] -= _value;
+            allowed[_from][msg.sender] -= _value;
+            Transfer(_from, _to, _value);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -150,6 +152,13 @@ contract LegendsToken is ERC20 {
      */
     function allowance(address _owner, address _spender) constant returns (uint256 remaining) {
         remaining = allowed[_owner][_spender];
+    }
+
+    /**
+     * @dev Direct Buy
+     */
+    function () payable {
+        LegendsCrowdfund(legendsCrowdfund).purchaseMembership.value(msg.value)(msg.sender);
     }
 
 }
