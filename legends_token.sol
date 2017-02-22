@@ -8,7 +8,7 @@ import "./erc20.sol";
  */
 contract LegendsToken is ERC20 {
     string public name = 'VIP';             //The Token's name: e.g. DigixDAO Tokens
-    uint8 public decimals = 17;             // 1Token ¨= 1$ (1ETH ¨= 10$)
+    uint8 public decimals = 18;             // 1Token ¨= 1$ (1ETH ¨= 10$)
     string public symbol = 'VIP';           //An identifier: e.g. REP
     string public version = 'VIP_0.1';
 
