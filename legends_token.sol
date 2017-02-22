@@ -49,20 +49,6 @@ contract LegendsToken is ERC20 {
         _;
     }
 
-    modifier senderHasSufficient(uint VIP) {
-        if (ownerVIP[msg.sender] < VIP) {
-            return false;
-        }
-        _;
-    }
-
-    modifier transferApproved(address from, uint VIP) {
-        if (allowed[from][msg.sender] < VIP || ownerVIP[from] < VIP) {
-            return false;
-        }
-        _;
-    }
-
     modifier allowanceIsZero(address spender, uint value) {
         // To change the approve amount you first have to reduce the addresses´
         // allowance to zero by calling `approve(_spender,0)` if it is not
@@ -122,22 +108,30 @@ contract LegendsToken is ERC20 {
     /**
      * @dev Implements ERC20 transfer()
      */
-    function transfer(address _to, uint256 _value) isActive recipientIsValid(_to) senderHasSufficient(_value) returns (bool success) {
-        ownerVIP[msg.sender] -= _value;
-        ownerVIP[_to] += _value;
-        Transfer(msg.sender, _to, _value);
-        return true;
+    function transfer(address _to, uint256 _value) isActive recipientIsValid(_to) returns (bool success) {
+        if (ownerVIP[msg.sender] >= _value) {
+            ownerVIP[msg.sender] -= _value;
+            ownerVIP[_to] += _value;
+            Transfer(msg.sender, _to, _value);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
      * @dev Implements ERC20 transferFrom()
      */
-    function transferFrom(address _from, address _to, uint256 _value) isActive recipientIsValid(_to) transferApproved(_from, _value) returns (bool success) {
-        ownerVIP[_to] += _value;
-        ownerVIP[_from] -= _value;
-        allowed[_from][msg.sender] -= _value;
-        Transfer(_from, _to, _value);
-        return true;
+    function transferFrom(address _from, address _to, uint256 _value) isActive recipientIsValid(_to) returns (bool success) {
+        if (allowed[_from][msg.sender] >= _value && ownerVIP[_from] >= _value) {
+            ownerVIP[_to] += _value;
+            ownerVIP[_from] -= _value;
+            allowed[_from][msg.sender] -= _value;
+            Transfer(_from, _to, _value);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
