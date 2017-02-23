@@ -32,7 +32,6 @@ contract LegendsCrowdfundTest is Test {
     function testInitialState() {
         assertEq(legendsCrowdfund.creator(), this);
         assertEq(legendsCrowdfund.start(), start);
-        assertEq(legendsCrowdfund.start(), start);
         assertEq(legendsCrowdfund.exitAddress(), exitAddress);
         assertEq(legendsCrowdfund.legendsToken(), legendsToken);
 
@@ -77,6 +76,7 @@ contract LegendsCrowdfundTest is Test {
         assertEq(legendsCrowdfund.recipientETH(recipient1), 0.9 ether);
         assertEq(legendsCrowdfund.recipientETH(recipient2), 0);
         assertEq(legendsCrowdfund.totalETH(), 0.9 ether);
+        assertEq(legendsToken.balanceOf(preallocation), 25000 ether);
         assertEq(legendsToken.balanceOf(recipient1), 10 ether);
         assertEq(legendsToken.balanceOf(recipient2), 0 ether);
         assertEq(legendsToken.totalSupply(), 25010 ether);
@@ -86,6 +86,7 @@ contract LegendsCrowdfundTest is Test {
         assertEq(legendsCrowdfund.recipientETH(recipient1), 1.8 ether);
         assertEq(legendsCrowdfund.recipientETH(recipient2), 0);
         assertEq(legendsCrowdfund.totalETH(), 1.8 ether);
+        assertEq(legendsToken.balanceOf(preallocation), 25000 ether);
         assertEq(legendsToken.balanceOf(recipient1), 20 ether);
         assertEq(legendsToken.balanceOf(recipient2), 0 ether);
         assertEq(legendsToken.totalSupply(), 25020 ether);
@@ -95,6 +96,7 @@ contract LegendsCrowdfundTest is Test {
         assertEq(legendsCrowdfund.recipientETH(recipient1), 1.8 ether);
         assertEq(legendsCrowdfund.recipientETH(recipient2), 0.9 ether);
         assertEq(legendsCrowdfund.totalETH(), 2.7 ether);
+        assertEq(legendsToken.balanceOf(preallocation), 25000 ether);
         assertEq(legendsToken.balanceOf(recipient1), 20 ether);
         assertEq(legendsToken.balanceOf(recipient2), 10 ether);
         assertEq(legendsToken.totalSupply(), 25030 ether);
@@ -104,6 +106,7 @@ contract LegendsCrowdfundTest is Test {
         assertEq(legendsCrowdfund.recipientETH(recipient1), 1.8 ether);
         assertEq(legendsCrowdfund.recipientETH(recipient2), 1.8 ether);
         assertEq(legendsCrowdfund.totalETH(), 3.6 ether);
+        assertEq(legendsToken.balanceOf(preallocation), 25000 ether);
         assertEq(legendsToken.balanceOf(recipient1), 20 ether);
         assertEq(legendsToken.balanceOf(recipient2), 20 ether);
         assertEq(legendsToken.totalSupply(), 25040 ether);
@@ -113,6 +116,7 @@ contract LegendsCrowdfundTest is Test {
         assertEq(legendsCrowdfund.recipientETH(recipient1), 1.8 ether);
         assertEq(legendsCrowdfund.recipientETH(recipient2), 2.7 ether);
         assertEq(legendsCrowdfund.totalETH(), 4.5 ether);
+        assertEq(legendsToken.balanceOf(preallocation), 25000 ether);
         assertEq(legendsToken.balanceOf(recipient1), 20 ether);
         assertEq(legendsToken.balanceOf(recipient2), 30 ether);
         assertEq(legendsToken.totalSupply(), 25050 ether);
@@ -136,7 +140,7 @@ contract LegendsCrowdfundNoTokenTest is Test {
 
     function setUp() {
         start = block.timestamp;
-        legendsCrowdfund = new LegendsCrowdfund(exitAddress, start, 1 ether);
+        legendsCrowdfund = new LegendsCrowdfund(exitAddress, start, 100 ether);
     }
 
     function testInitialState() {
@@ -171,7 +175,7 @@ contract LegendsCrowdfundNotStartedTest is Test {
     function setUp() {
         start = block.timestamp + 200;
         end = start + 100;
-        legendsCrowdfund = new LegendsCrowdfund(exitAddress, start, 1 ether);
+        legendsCrowdfund = new LegendsCrowdfund(exitAddress, start, 100 ether);
         legendsToken = new LegendsToken(legendsCrowdfund, preallocation, end, false);
         legendsCrowdfund.setTokenContract(legendsToken);
     }
@@ -186,7 +190,7 @@ contract LegendsCrowdfundNotStartedTest is Test {
         assertEq(legendsToken.legendsCrowdfund(), legendsCrowdfund);
     }
 
-    function testThrowsSaleIsOver() {
+    function testThrowsSaleNotStarted() {
         legendsCrowdfund.purchaseMembership.value(0.9 ether)(recipient1);
     }
 
