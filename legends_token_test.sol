@@ -11,10 +11,11 @@ contract LegendsTokenNotActiveNotFromCrowdfund is Test {
     uint start;
 
     address crowdfund = 0x5678;
+    address preallocation = 0x5678;
 
     function setUp() {
         start = block.timestamp + 20000;
-        legendsToken = new LegendsToken(crowdfund, start, false);
+        legendsToken = new LegendsToken(crowdfund, preallocation, start, false);
     }
 
     function testInitialState() {
@@ -35,12 +36,14 @@ contract LegendsTokenNotActiveTest is Test {
 
     uint start;
 
+    address preallocation = 0x5678;
+
     address recipient1 = 0x1111;
     address recipient2 = 0x2222;
 
     function setUp() {
         start = block.timestamp + 20000;
-        legendsToken = new LegendsToken(this, start, false);
+        legendsToken = new LegendsToken(this, preallocation, start, false);
     }
 
     function testInitialState() {
@@ -52,17 +55,17 @@ contract LegendsTokenNotActiveTest is Test {
         legendsToken.addTokens(recipient1, 1 ether);
         assertEq(legendsToken.balanceOf(recipient1), 1 ether);
         assertEq(legendsToken.balanceOf(recipient2), 0);
-        assertEq(legendsToken.totalSupply(), 1 ether);
+        assertEq(legendsToken.totalSupply(), 25001 ether);
 
         legendsToken.addTokens(recipient2, 5 ether);
         assertEq(legendsToken.balanceOf(recipient1), 1 ether);
         assertEq(legendsToken.balanceOf(recipient2), 5 ether);
-        assertEq(legendsToken.totalSupply(), 6 ether);
+        assertEq(legendsToken.totalSupply(), 25006 ether);
 
         legendsToken.addTokens(recipient2, 3 ether);
         assertEq(legendsToken.balanceOf(recipient1), 1 ether);
         assertEq(legendsToken.balanceOf(recipient2), 8 ether);
-        assertEq(legendsToken.totalSupply(), 9 ether);
+        assertEq(legendsToken.totalSupply(), 25009 ether);
     }
 
 
@@ -84,12 +87,14 @@ contract LegendsTokenActiveTest is Test {
 
     uint start;
 
+    address preallocation = 0x5678;
+
     address recipient1 = 0x1111;
     address recipient2 = 0x2222;
 
     function setUp() {
         start = block.timestamp;
-        legendsToken = new LegendsToken(this, start, false);
+        legendsToken = new LegendsToken(this, preallocation, start, false);
     }
 
     function testInitialState() {
@@ -109,12 +114,14 @@ contract LegendsTokenTestingModeTest is Test {
 
     uint start;
 
+    address preallocation = 0x5678;
+
     address recipient1 = 0x1111;
     address recipient2 = 0x2222;
 
     function setUp() {
         start = block.timestamp;
-        legendsToken = new LegendsToken(this, start, true);
+        legendsToken = new LegendsToken(this, preallocation, start, true);
     }
 
     function testInitialState() {
@@ -126,12 +133,12 @@ contract LegendsTokenTestingModeTest is Test {
         legendsToken.addTokens(this, 1 ether);
         assertEq(legendsToken.balanceOf(this), 1 ether);
         assertEq(legendsToken.balanceOf(recipient1), 0);
-        assertEq(legendsToken.totalSupply(), 1 ether);
+        assertEq(legendsToken.totalSupply(), 25001 ether);
 
         legendsToken.transfer(recipient1, 0.2 ether);
         assertEq(legendsToken.balanceOf(this), 0.8 ether);
         assertEq(legendsToken.balanceOf(recipient1), 0.2 ether);
-        assertEq(legendsToken.totalSupply(), 1 ether);
+        assertEq(legendsToken.totalSupply(), 25001 ether);
     }
 
     function testThrowsTransferRecipientIsZero() {
