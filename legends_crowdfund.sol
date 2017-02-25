@@ -7,7 +7,7 @@ import "./legends_token.sol";
  * @title LegendsCrowdfund
  */
 contract LegendsCrowdfund {
-    
+
     address public creator;
     address public exitAddress;
 
@@ -40,7 +40,7 @@ contract LegendsCrowdfund {
         }
         _;
     }
-    
+
     modifier recipientIsValid(address recipient) {
         if (recipient == 0 || recipient == address(this)) {
             throw;
@@ -88,12 +88,12 @@ contract LegendsCrowdfund {
      * @param recipient Address that tokens should be attributed to.
      */
     function purchaseMembership(address recipient) external payable saleActive hasValue recipientIsValid(recipient) {
-        
+
         // Attempt to send the ETH to the exit address.
         if (!exitAddress.send(msg.value)) {
             throw;
         }
-        
+
         // Update ETH amounts.
         recipientETH[recipient] += msg.value;
         totalETH += msg.value;
